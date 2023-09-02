@@ -1,0 +1,300 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Meetups API
+servers:
+  - url: http://localhost:8080/
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The user ID.
+          example: aaa-aaa
+        name:
+          type: string
+          description: The user's name.
+          example: Leanne
+        surname:
+          type: string
+          description: The users's surname
+          example: Graham
+        post:
+          type: string
+          description: The users's position
+          example: Developer
+        roles:
+          type: string
+          enum: [chief, employee]
+          description: The user's role
+          example: chief
+
+    ShortUser:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The user ID.
+          example: aaa-aaa
+        name:
+          type: string
+          description: The user's name.
+          example: Leanne
+        surname:
+          type: string
+          description: The user's surname
+          example: Graham
+
+    Meetup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The meetup ID.
+          example: aaa-aaa
+        modified:
+          type: string
+          description: Meetup last change DateTime
+          example: 2021-08-27T04:38:33.816Z
+        start:
+          type: string
+          description: Meetup start  DateTime
+          example: 2021-08-27T04:38:33.816Z
+        finish:
+          type: string
+          description: Meetup end DataTime
+          example: 2021-08-27T04:38:33.816Z
+        author:
+          $ref: "#/components/schemas/ShortUser"
+        speakers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShortUser"
+        subject:
+          type: string
+          description: Meetup title
+        excerpt:
+          type: string
+          description: Meetups short description
+        place:
+          type: string
+          description: Meetup location
+          example: 630 Goyette Causeway
+        goCount:
+          type: string
+          description: Count of participants
+        status:
+          type: string
+          enum: ["CONFIRMED", "DRAFT", "REQUEST"]
+          description: Meetup status
+        isOver:
+          type: boolean
+
+paths:
+  /api/login/:
+    post:
+      description: Login
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  required: true
+                  type: string
+      responses:
+        "201":
+          description: Created
+    get:
+      description: Check if user is logged in
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Current user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /api/logout:
+    get:
+      description: Logout current user
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Logout.
+
+  /api/meetups:
+    get:
+      tags:
+        - meetups
+      description: Get meetups list
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Meetup"
+
+    post:
+      tags:
+        - meetups
+      description: Create meetup
+      responses:
+
+  /api/meetups/{id}:
+    get:
+      tags:
+        - meetups
+      description: Get meetup info
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meetup"
+
+    delete:
+      tags:
+        - meetups
+      description: Delete meetup
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: OK
+
+  /api/meetups/{id}/participants:
+    get:
+      tags:
+        - meetups-participants
+      description: Get meetups participants
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+    post:
+      tags:
+        - meetups-participants
+      description: Join the meetup
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: OK
+
+    delete:
+      tags:
+        - meetups-participants
+      description: Cancel meetups join
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+  /api/meetups/{id}/votedusers:
+    get:
+      tags:
+        - meetups-votedusers
+      description: Get meetups votes
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+    post:
+      tags:
+        - meetups-votedusers
+      description: Vote for meetup
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: OK
+
+    delete:
+      tags:
+        - meetups-votedusers
+      description: Unvote
+      parameters:
+        - name: id
+          in: path
+          description: Meetup ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
